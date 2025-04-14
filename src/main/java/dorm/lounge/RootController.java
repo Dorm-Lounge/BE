@@ -1,5 +1,6 @@
 package dorm.lounge;
 
+import dorm.lounge.global.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RootController {
 
     @GetMapping("/")
-    public String healthCheck() {
-        return "I'm healthy!";
+    public ApiResponse<String> healthCheck() {
+        return ApiResponse.onSuccess("I'm healthy!");
     }
 
 }
