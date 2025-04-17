@@ -1,7 +1,5 @@
 package dorm.lounge.global.security;
 
-import dorm.lounge.domain.user.entity.User;
-import dorm.lounge.domain.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -32,8 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtUtil.extractToken(request);
 
-        if (token != null && jwtProvider.validateToken(token)) {
-            Claims claims = jwtProvider.parseClaims(token);
+        if (token != null && jwtUtil.validateToken(token)) {
+            Claims claims = jwtUtil.parseClaims(token);
             Long userId = jwtUtil.extractUserId(claims);
 
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(String.valueOf(userId));
