@@ -25,28 +25,17 @@ public class PostDTO {
     }
 
     public static class PostResponse {
-        @Getter
-        @Builder
-        @AllArgsConstructor
-        public static class GetPostResponse {
-            private String nickname;
-            private Long postId;
-            private String title;
-            private String content;
-            private int viewCount;
-            private int likeCount;
-        }
 
         @Getter
         @Builder
         public static class GetPostListResponse {
-            private List<GetPostList> posts;
-            private List<GetPostList> bestPosts;
+            private List<GetPostResponse> posts;
+            private List<GetPostResponse> bestPosts;
         }
 
         @Getter
         @Builder
-        public static class GetPostList {
+        public static class GetPostResponse {
             private Long postId;
             private String title;
             private String content;
@@ -54,6 +43,12 @@ public class PostDTO {
             private int likeCount;
             private int viewCount;
             private String createdAt;
+        }
+
+        @Getter
+        @Builder
+        public static class GetPostSearchResponse {
+            private List<GetPostResponse> posts;
         }
     }
 }

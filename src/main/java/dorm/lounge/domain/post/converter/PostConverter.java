@@ -1,7 +1,7 @@
 package dorm.lounge.domain.post.converter;
 
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostSearchResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
-import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostList;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostResponse;
 import dorm.lounge.domain.post.entity.Post;
 import dorm.lounge.domain.user.entity.User;
@@ -9,6 +9,7 @@ import dorm.lounge.domain.user.entity.User;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PostConverter {
     public static Post toPost(User user, String title, String content) {
@@ -29,11 +30,12 @@ public class PostConverter {
                 .content(post.getContent())
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
+                .createdAt(formatTime(post.getCreatedAt()))
                 .build();
     }
 
-    public static GetPostList toPostList(Post post) {
-        return GetPostList.builder()
+    public static GetPostResponse toPostList(Post post) {
+        return GetPostResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -54,10 +56,20 @@ public class PostConverter {
         return createdAt.toLocalDate().toString();
     }
 
-    public static GetPostListResponse toPostListResponse(List<GetPostList> posts, List<GetPostList> bestPosts) {
+    public static GetPostListResponse toPostListResponse(List<GetPostResponse> posts, List<GetPostResponse> bestPosts) {
         return GetPostListResponse.builder()
                 .posts(posts)
                 .bestPosts(bestPosts)
+                .build();
+    }
+
+    public static GetPostSearchResponse toPostSearchResponse(List<Post> posts) {
+        List<GetPostResponse> result = posts.stream()
+                .map(PostConverter::toPostList)
+                .collect(Collectors.toList());
+
+        return GetPostSearchResponse.builder()
+                .posts(result)
                 .build();
     }
 }

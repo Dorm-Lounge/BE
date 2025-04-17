@@ -1,7 +1,7 @@
 package dorm.lounge.domain.post.service;
 
 import dorm.lounge.domain.post.converter.PostConverter;
-import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostList;
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostSearchResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.UpdatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.CreatePostRequest;
@@ -80,18 +80,43 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetPostListResponse getAllPosts() {
-        List<Post> allPosts = postRepository.findAllByOrderByCreatedAtDesc();
-        List<Post> bestPosts = postRepository.findTop3ByCreatedAtAfterOrderByLikeCountDesc(LocalDateTime.now().minusDays(7));
+    public GetPostListResponse getAllPosts(String sortType) {
+        // 1. 정렬 방식에 따라 게시글 전체 조회
+        List<Post> posts;
+        if ("popular".equalsIgnoreCase(sortType)) {
+            posts = postRepository.findAllByOrderByLikeCountDesc();
+        } else {
+            posts = postRepository.findAllByOrderByCreatedAtDesc();
+        }
 
-        List<GetPostList> postList = allPosts.stream()
+        // 2. 최근 7일 이내 게시글 중 좋아요 수 기준 상위 3개 게시글 조회
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        List<Post> bestPosts = postRepository.findTop3ByCreatedAtAfterOrderByLikeCountDesc(sevenDaysAgo);
+
+        List<GetPostResponse> postList = posts.stream()
                 .map(PostConverter::toPostList)
                 .collect(Collectors.toList());
 
-        List<GetPostList> bestPostList = bestPosts.stream()
+        List<GetPostResponse> bestPostList = bestPosts.stream()
                 .map(PostConverter::toPostList)
                 .collect(Collectors.toList());
 
         return PostConverter.toPostListResponse(postList, bestPostList);
+    }
+    @Override
+    @Transactional
+    public GetPostResponse getPostDetail(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+
+        post.addViewCount(); // 조회 수 증가
+        return PostConverter.toPostList(post);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetPostSearchResponse searchPosts(String keyword) {
+        List<Post> posts = postRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+        return PostConverter.toPostSearchResponse(posts);
     }
 }

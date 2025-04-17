@@ -1,6 +1,6 @@
 package dorm.lounge.domain.post.controller;
 
-
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostSearchResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.UpdatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.CreatePostRequest;
@@ -47,8 +47,20 @@ public class PostController {
     }
 
     @GetMapping
-    @Operation(summary = "게시글 전체 조회", description = "게시글 전체 목록과 베스트 게시글을 함께 반환합니다.")
-    public ApiResponse<GetPostListResponse> getAllPosts() {
-        return ApiResponse.onSuccess(postService.getAllPosts());
+    @Operation(summary = "게시글 전체 조회", description = "최신순 또는 인기순으로 게시글 전체 목록과 베스트 게시글을 함께 반환합니다.")
+    public ApiResponse<GetPostListResponse> getAllPosts(@RequestParam(defaultValue = "recent") String sortType) {
+        return ApiResponse.onSuccess(postService.getAllPosts(sortType));
+    }
+
+    @GetMapping("/{postId}")
+    @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
+    public ApiResponse<GetPostResponse> getPostDetail(@PathVariable Long postId) {
+        return ApiResponse.onSuccess(postService.getPostDetail(postId));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "게시글 검색", description = "키워드로 게시글을 검색합니다.")
+    public ApiResponse<GetPostSearchResponse> searchPosts(@RequestParam String keyword) {
+        return ApiResponse.onSuccess(postService.searchPosts(keyword));
     }
 }
