@@ -1,8 +1,11 @@
 package dorm.lounge.domain.user.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 public class UserDTO {
     public static class UserRequest {
@@ -14,6 +17,17 @@ public class UserDTO {
     }
 
     public static class UserResponse {
-
+        @Getter
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Builder
+        public static class MyPageResponse {
+            private String name;
+            private String email;
+            private String nickname;
+            private String profileImage;
+            private Boolean gpsVerified;
+            private LocalDateTime gpsVerifiedAt;
+        }
     }
 }
