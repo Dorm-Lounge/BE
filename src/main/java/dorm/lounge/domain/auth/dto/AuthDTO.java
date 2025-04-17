@@ -1,0 +1,36 @@
+package dorm.lounge.domain.auth.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+public class AuthDTO {
+    public static class AuthRequest {
+
+        @Getter
+        @NoArgsConstructor
+        public static class SocialLoginRequest {
+            private String accessToken;
+        }
+    }
+
+    public static class AuthResponse {
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class AuthUserResponse {
+            private String email;
+            private String name;
+            private String nickname;
+            private String profileImage;
+            private String accessToken;
+            private Boolean gpsVerified;
+            private LocalDateTime gpsVerifiedAt;
+        }
+    }
+}

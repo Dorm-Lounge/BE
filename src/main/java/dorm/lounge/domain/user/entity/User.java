@@ -20,9 +20,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    private String name;
+
     private String nickname;
 
     private String email;
+
+    private String profileImage;
 
     private Boolean gpsVerified;
 
