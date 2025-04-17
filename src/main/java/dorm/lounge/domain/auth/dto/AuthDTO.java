@@ -31,6 +31,7 @@ public class AuthDTO {
             private String accessToken;
             private Boolean gpsVerified;
             private LocalDateTime gpsVerifiedAt;
+            private Boolean requireGps; // GPS 인증 필요 여부
         }
     }
 }

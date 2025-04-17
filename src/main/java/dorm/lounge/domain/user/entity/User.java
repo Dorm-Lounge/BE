@@ -36,4 +36,14 @@ public class User {
     private Building building;
 
     private String roomNumber;
+
+    public void updateGps(LocalDateTime verifiedAt) {
+        this.gpsVerified = true;
+        this.gpsVerifiedAt = verifiedAt;
+    }
+
+    public void clearGps() {
+        this.gpsVerified = false;
+        this.gpsVerifiedAt = null;
+    }
 }
