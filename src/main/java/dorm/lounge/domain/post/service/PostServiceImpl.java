@@ -1,12 +1,15 @@
 package dorm.lounge.domain.post.service;
 
 import dorm.lounge.domain.post.converter.PostConverter;
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetComment;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostSearchResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.UpdatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.CreatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostResponse;
+import dorm.lounge.domain.post.entity.Comment;
 import dorm.lounge.domain.post.entity.Post;
+import dorm.lounge.domain.post.repository.CommentRepository;
 import dorm.lounge.domain.post.repository.PostLikeRepository;
 import dorm.lounge.domain.post.repository.PostRepository;
 import dorm.lounge.domain.user.entity.User;
@@ -26,6 +29,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -121,7 +125,13 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new RuntimeException("게시글 없음"));
 
         post.addViewCount(); // 조회 수 증가
-        return PostConverter.toPostList(post, isPostLikedByUser(user, post));
+        // 댓글 리스트 조회
+        List<Comment> comments = commentRepository.findByPost(post);
+        List<GetComment> commentDTOs = comments.stream()
+                .map(PostConverter::toComment)
+                .collect(Collectors.toList());
+
+        return PostConverter.toPostDetail(post, isPostLikedByUser(user, post), commentDTOs);
     }
 
     @Override
