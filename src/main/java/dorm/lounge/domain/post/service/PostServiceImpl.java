@@ -1,6 +1,8 @@
 package dorm.lounge.domain.post.service;
 
 import dorm.lounge.domain.post.converter.PostConverter;
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostList;
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.UpdatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.CreatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostResponse;
@@ -11,6 +13,10 @@ import dorm.lounge.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,5 +76,22 @@ public class PostServiceImpl implements PostService {
         }
 
         return user;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetPostListResponse getAllPosts() {
+        List<Post> allPosts = postRepository.findAllByOrderByCreatedAtDesc();
+        List<Post> bestPosts = postRepository.findTop3ByCreatedAtAfterOrderByLikeCountDesc(LocalDateTime.now().minusDays(7));
+
+        List<GetPostList> postList = allPosts.stream()
+                .map(PostConverter::toPostList)
+                .collect(Collectors.toList());
+
+        List<GetPostList> bestPostList = bestPosts.stream()
+                .map(PostConverter::toPostList)
+                .collect(Collectors.toList());
+
+        return PostConverter.toPostListResponse(postList, bestPostList);
     }
 }

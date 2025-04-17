@@ -1,6 +1,7 @@
 package dorm.lounge.domain.post.controller;
 
 
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.UpdatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostRequest.CreatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostResponse;
@@ -45,4 +46,9 @@ public class PostController {
         return ApiResponse.onSuccess("게시글이 삭제되었습니다.");
     }
 
+    @GetMapping
+    @Operation(summary = "게시글 전체 조회", description = "게시글 전체 목록과 베스트 게시글을 함께 반환합니다.")
+    public ApiResponse<GetPostListResponse> getAllPosts() {
+        return ApiResponse.onSuccess(postService.getAllPosts());
+    }
 }
