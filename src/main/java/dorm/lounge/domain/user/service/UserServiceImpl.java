@@ -1,7 +1,6 @@
 package dorm.lounge.domain.user.service;
 
 import dorm.lounge.domain.user.dto.UserDTO.UserRequest.GpsRequest;
-import dorm.lounge.domain.user.dto.UserDTO.UserResponse.GpsResponse;
 import dorm.lounge.domain.user.entity.User;
 import dorm.lounge.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +17,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public GpsResponse verifyGps(String userId, GpsRequest request) {
+    public void verifyGps(String userId, GpsRequest request) {
         User user = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
         if (request.isSuccess()) {
             user.updateGps(LocalDateTime.now());
         }
-
-        return new GpsResponse(request.isSuccess());
     }
 }

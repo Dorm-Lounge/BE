@@ -6,7 +6,10 @@ import dorm.lounge.domain.auth.dto.AuthProfile;
 import dorm.lounge.domain.user.entity.User;
 import dorm.lounge.domain.user.repository.UserRepository;
 import dorm.lounge.global.security.JwtProvider;
+import dorm.lounge.global.security.JwtUtil;
 import dorm.lounge.global.security.OAuthUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +25,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public AuthUserResponse kakaoLoginWithAccessToken(String accessToken) {
+    public AuthUserResponse kakaoLoginWithAccessToken(String kakaoAccessToken) {
         // 1. 카카오 사용자 프로필 조회
-        AuthProfile profile = oAuthUtil.getKakaoProfile(accessToken);
+        AuthProfile profile = oAuthUtil.getKakaoProfile(kakaoAccessToken);
 
         String nickname = nicknameGenerator.generate(); // 랜덤 닉네임
 
@@ -53,10 +56,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 3. JWT 발급
-        String token = jwtProvider.createAccessToken(user.getUserId(), user.getEmail());
+        String accessToken = jwtProvider.createAccessToken(user.getUserId(), user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(user.getUserId(), user.getEmail());
+
+        user.updateRefreshToken(refreshToken);
 
         // 4. 응답 DTO 반환
-        return AuthConverter.toAuthUserResponse(requireGps, user, token);
+        return AuthConverter.toAuthUserResponse(requireGps, user, accessToken, refreshToken);
     }
 
     public boolean isGpsExpiredOrNotVerified(User user) {

@@ -29,6 +29,7 @@ public class AuthDTO {
             private String nickname;
             private String profileImage;
             private String accessToken;
+            private String refreshToken;
             private Boolean gpsVerified;
             private LocalDateTime gpsVerifiedAt;
             private Boolean requireGps; // GPS 인증 필요 여부

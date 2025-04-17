@@ -4,9 +4,10 @@ import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.AuthUserResponse;
 import dorm.lounge.domain.user.entity.User;
 
 public class AuthConverter {
-    public static AuthUserResponse toAuthUserResponse(Boolean requireGps, User user, String token) {
+    public static AuthUserResponse toAuthUserResponse(Boolean requireGps, User user, String accessToken, String refreshToken) {
         return AuthUserResponse.builder()
-                .accessToken(token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .gpsVerified(user.getGpsVerified())
                 .gpsVerifiedAt(user.getGpsVerifiedAt())
                 .email(user.getEmail())

@@ -1,6 +1,5 @@
 package dorm.lounge.domain.user.controller;
 
-import dorm.lounge.domain.user.dto.UserDTO.UserResponse.GpsResponse;
 import dorm.lounge.domain.user.dto.UserDTO.UserRequest.GpsRequest;
 import dorm.lounge.domain.user.service.UserService;
 import dorm.lounge.global.ApiResponse;
@@ -22,9 +21,9 @@ public class UserController {
     private final UserService userService;
     @PostMapping("/gps")
     @Operation(summary = "GPS 인증 처리", description = "클라이언트 측 인증 결과에 따라 인증 상태 저장")
-    public ApiResponse<GpsResponse> verifyGps(Authentication authentication, @RequestBody GpsRequest request) {
-        GpsResponse response = userService.verifyGps(authentication.getName(), request);
-        return ApiResponse.onSuccess(response);
+    public ApiResponse<String> verifyGps(Authentication authentication, @RequestBody GpsRequest request) {
+        userService.verifyGps(authentication.getName(), request);
+        return ApiResponse.onSuccess("인증 성공");
     }
 
 }

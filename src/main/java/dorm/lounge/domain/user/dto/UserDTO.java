@@ -14,10 +14,6 @@ public class UserDTO {
     }
 
     public static class UserResponse {
-        @Getter
-        @AllArgsConstructor
-        public static class GpsResponse {
-            private boolean success;
-        }
+
     }
 }
