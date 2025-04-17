@@ -43,6 +43,7 @@ public class PostDTO {
             private int likeCount;
             private int viewCount;
             private String createdAt;
+            private boolean isLiked;
         }
 
         @Getter

@@ -9,7 +9,7 @@ public interface PostService {
     GetPostResponse createPost(String userId, CreatePostRequest request);
     void updatePost(String userId, Long postId, UpdatePostRequest request);
     void deletePost(String userId, Long postId);
-    GetPostListResponse getAllPosts(String sortType);
+    GetPostListResponse getAllPosts(String userId, String sortType);
     GetPostResponse getPostDetail(String userId, Long postId);
     GetPostSearchResponse searchPosts(String userId, String keyword);
 

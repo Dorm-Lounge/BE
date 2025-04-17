@@ -31,10 +31,11 @@ public class PostConverter {
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
                 .createdAt(formatTime(post.getCreatedAt()))
+                .isLiked(false)
                 .build();
     }
 
-    public static GetPostResponse toPostList(Post post) {
+    public static GetPostResponse toPostList(Post post, boolean isLiked) {
         return GetPostResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -43,6 +44,7 @@ public class PostConverter {
                 .likeCount(post.getLikeCount())
                 .viewCount(post.getViewCount())
                 .createdAt(formatTime(post.getCreatedAt()))
+                .isLiked(isLiked)
                 .build();
     }
 
@@ -63,13 +65,9 @@ public class PostConverter {
                 .build();
     }
 
-    public static GetPostSearchResponse toPostSearchResponse(List<Post> posts) {
-        List<GetPostResponse> result = posts.stream()
-                .map(PostConverter::toPostList)
-                .collect(Collectors.toList());
-
+    public static GetPostSearchResponse toPostSearchResponse(List<GetPostResponse> posts) {
         return GetPostSearchResponse.builder()
-                .posts(result)
+                .posts(posts)
                 .build();
     }
 }
