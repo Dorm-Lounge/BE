@@ -15,6 +15,12 @@ public class AuthDTO {
         public static class SocialLoginRequest {
             private String accessToken;
         }
+
+        @Getter
+        @NoArgsConstructor
+        public static class TokenRefreshRequest {
+            private String refreshToken;
+        }
     }
 
     public static class AuthResponse {
@@ -29,8 +35,18 @@ public class AuthDTO {
             private String nickname;
             private String profileImage;
             private String accessToken;
+            private String refreshToken;
             private Boolean gpsVerified;
             private LocalDateTime gpsVerifiedAt;
+            private Boolean requireGps; // GPS 인증 필요 여부
+        }
+
+        @Getter
+        @AllArgsConstructor
+        @Builder
+        public static class TokenRefreshResponse {
+            private String accessToken;
+            private String refreshToken;
         }
     }
 }

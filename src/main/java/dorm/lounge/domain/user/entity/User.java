@@ -32,8 +32,20 @@ public class User {
 
     private LocalDateTime gpsVerifiedAt;
 
-    @Enumerated(EnumType.STRING)
-    private Building building;
+    @Column(length = 500)
+    private String refreshToken;
 
-    private String roomNumber;
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void updateGps(LocalDateTime verifiedAt) {
+        this.gpsVerified = true;
+        this.gpsVerifiedAt = verifiedAt;
+    }
+
+    public void clearGps() {
+        this.gpsVerified = false;
+        this.gpsVerifiedAt = null;
+    }
 }
