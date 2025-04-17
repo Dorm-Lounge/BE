@@ -105,7 +105,8 @@ public class PostServiceImpl implements PostService {
     }
     @Override
     @Transactional
-    public GetPostResponse getPostDetail(Long postId) {
+    public GetPostResponse getPostDetail(String userId, Long postId) {
+        User user = getVerifiedUser(userId);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글 없음"));
 
@@ -115,7 +116,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetPostSearchResponse searchPosts(String keyword) {
+    public GetPostSearchResponse searchPosts(String userId, String keyword) {
+        User user = getVerifiedUser(userId);
         List<Post> posts = postRepository.findByTitleContainingOrContentContaining(keyword, keyword);
         return PostConverter.toPostSearchResponse(posts);
     }

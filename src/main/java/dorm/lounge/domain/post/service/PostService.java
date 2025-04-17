@@ -10,7 +10,7 @@ public interface PostService {
     void updatePost(String userId, Long postId, UpdatePostRequest request);
     void deletePost(String userId, Long postId);
     GetPostListResponse getAllPosts(String sortType);
-    GetPostResponse getPostDetail(Long postId);
-    GetPostSearchResponse searchPosts(String keyword);
+    GetPostResponse getPostDetail(String userId, Long postId);
+    GetPostSearchResponse searchPosts(String userId, String keyword);
 
 }

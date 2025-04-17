@@ -54,13 +54,15 @@ public class PostController {
 
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
-    public ApiResponse<GetPostResponse> getPostDetail(@PathVariable Long postId) {
-        return ApiResponse.onSuccess(postService.getPostDetail(postId));
+    public ApiResponse<GetPostResponse> getPostDetail(Authentication authentication,
+                                                      @PathVariable Long postId) {
+        return ApiResponse.onSuccess(postService.getPostDetail(authentication.getName(), postId));
     }
 
     @GetMapping("/search")
     @Operation(summary = "게시글 검색", description = "키워드로 게시글을 검색합니다.")
-    public ApiResponse<GetPostSearchResponse> searchPosts(@RequestParam String keyword) {
-        return ApiResponse.onSuccess(postService.searchPosts(keyword));
+    public ApiResponse<GetPostSearchResponse> searchPosts(Authentication authentication,
+                                                          @RequestParam String keyword) {
+        return ApiResponse.onSuccess(postService.searchPosts(authentication.getName(), keyword));
     }
 }
