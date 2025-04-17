@@ -32,4 +32,9 @@ public class Post extends BaseEntity {
     private int viewCount;
 
     private int likeCount;
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
