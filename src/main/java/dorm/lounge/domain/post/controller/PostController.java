@@ -48,8 +48,9 @@ public class PostController {
 
     @GetMapping
     @Operation(summary = "게시글 전체 조회", description = "최신순 또는 인기순으로 게시글 전체 목록과 베스트 게시글을 함께 반환합니다.")
-    public ApiResponse<GetPostListResponse> getAllPosts(@RequestParam(defaultValue = "recent") String sortType) {
-        return ApiResponse.onSuccess(postService.getAllPosts(sortType));
+    public ApiResponse<GetPostListResponse> getAllPosts(Authentication authentication,
+                                                        @RequestParam(defaultValue = "recent") String sortType) {
+        return ApiResponse.onSuccess(postService.getAllPosts(authentication.getName(), sortType));
     }
 
     @GetMapping("/{postId}")
