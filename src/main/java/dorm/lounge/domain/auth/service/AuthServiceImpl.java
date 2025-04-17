@@ -1,6 +1,9 @@
 package dorm.lounge.domain.auth.service;
 
 import dorm.lounge.domain.auth.converter.AuthConverter;
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.TokenRefreshResponse;
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthRequest.TokenRefreshRequest;
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthRequest.SocialLoginRequest;
 import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.AuthUserResponse;
 import dorm.lounge.domain.auth.dto.AuthProfile;
 import dorm.lounge.domain.user.entity.User;
@@ -8,8 +11,7 @@ import dorm.lounge.domain.user.repository.UserRepository;
 import dorm.lounge.global.security.JwtProvider;
 import dorm.lounge.global.security.JwtUtil;
 import dorm.lounge.global.security.OAuthUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final OAuthUtil oAuthUtil;
+    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final NicknameGenerator nicknameGenerator;
 
     @Override
     @Transactional
-    public AuthUserResponse kakaoLoginWithAccessToken(String kakaoAccessToken) {
+    public AuthUserResponse kakaoLoginWithAccessToken(SocialLoginRequest socialLoginRequest) {
         // 1. 카카오 사용자 프로필 조회
-        AuthProfile profile = oAuthUtil.getKakaoProfile(kakaoAccessToken);
+        AuthProfile profile = oAuthUtil.getKakaoProfile(socialLoginRequest.getAccessToken());
 
         String nickname = nicknameGenerator.generate(); // 랜덤 닉네임
 
@@ -71,5 +74,37 @@ public class AuthServiceImpl implements AuthService {
         }
         if (user.getGpsVerifiedAt() == null) return true;
         return user.getGpsVerifiedAt().plusMonths(3).isBefore(java.time.LocalDateTime.now());
+    }
+
+    @Override
+    @Transactional
+    public TokenRefreshResponse refreshAccessToken(TokenRefreshRequest tokenRefreshRequest) {
+        String refreshToken = tokenRefreshRequest.getRefreshToken();
+
+        // 1. 토큰 유효성 검증
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new RuntimeException("유효하지 않은 RefreshToken입니다.");
+        }
+
+        // 2. 사용자 정보 추출
+        Claims claims = jwtUtil.parseClaims(refreshToken);
+        Long userId = jwtUtil.extractUserId(claims);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 3. 사용자 DB의 refreshToken과 비교
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            throw new RuntimeException("RefreshToken 불일치");
+        }
+
+        // 4. 새로운 AccessToken 발급
+        String newAccessToken = jwtProvider.createAccessToken(user.getUserId(), user.getEmail());
+        String newRefreshToken = jwtProvider.createRefreshToken(user.getUserId(), user.getEmail());
+
+        user.updateRefreshToken(newRefreshToken);
+
+        return AuthConverter.toTokenRefreshResponse(newAccessToken, newRefreshToken);
+
     }
 }

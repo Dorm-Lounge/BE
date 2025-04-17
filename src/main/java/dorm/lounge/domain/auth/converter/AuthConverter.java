@@ -1,5 +1,6 @@
 package dorm.lounge.domain.auth.converter;
 
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.TokenRefreshResponse;
 import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.AuthUserResponse;
 import dorm.lounge.domain.user.entity.User;
 
@@ -15,6 +16,13 @@ public class AuthConverter {
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
                 .requireGps(requireGps)
+                .build();
+    }
+
+    public static TokenRefreshResponse toTokenRefreshResponse(String newAccessToken, String newRefreshToken) {
+        return TokenRefreshResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
                 .build();
     }
 }

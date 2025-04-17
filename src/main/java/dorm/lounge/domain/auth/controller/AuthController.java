@@ -1,13 +1,13 @@
 package dorm.lounge.domain.auth.controller;
 
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthRequest.TokenRefreshRequest;
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.TokenRefreshResponse;
 import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.AuthUserResponse;
 import dorm.lounge.domain.auth.dto.AuthDTO.AuthRequest.SocialLoginRequest;
 import dorm.lounge.domain.auth.service.AuthService;
 import dorm.lounge.global.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +25,12 @@ public class AuthController {
     @PostMapping("/kakao/login")
     @Operation(summary = "카카오 로그인 API", description = "카카오 access token 기반 로그인 API")
     public ApiResponse<AuthUserResponse> kakaoLogin(@RequestBody SocialLoginRequest request) {
-        return ApiResponse.onSuccess(authService.kakaoLoginWithAccessToken(request.getAccessToken()));
+        return ApiResponse.onSuccess(authService.kakaoLoginWithAccessToken(request));
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "AccessToken 재발급", description = "RefreshToken을 통해 새로운 AccessToken을 재발급")
+    public ApiResponse<TokenRefreshResponse> refreshAccessToken(@RequestBody TokenRefreshRequest request) {
+        return ApiResponse.onSuccess(authService.refreshAccessToken(request));
     }
 }

@@ -1,9 +1,12 @@
 package dorm.lounge.domain.auth.service;
 
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthRequest.SocialLoginRequest;
 import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.AuthUserResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthRequest.TokenRefreshRequest;
+import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.TokenRefreshResponse;
 
 public interface AuthService {
-    AuthUserResponse kakaoLoginWithAccessToken(String accessToken);
+    AuthUserResponse kakaoLoginWithAccessToken(SocialLoginRequest socialLoginRequest);
+    TokenRefreshResponse refreshAccessToken(TokenRefreshRequest tokenRefreshRequest);
 }
