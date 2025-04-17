@@ -1,8 +1,10 @@
 package dorm.lounge.domain.post.converter;
 
+import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetComment;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostSearchResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostListResponse;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostResponse;
+import dorm.lounge.domain.post.entity.Comment;
 import dorm.lounge.domain.post.entity.Post;
 import dorm.lounge.domain.user.entity.User;
 
@@ -45,6 +47,30 @@ public class PostConverter {
                 .viewCount(post.getViewCount())
                 .createdAt(formatTime(post.getCreatedAt()))
                 .isLiked(isLiked)
+                .commentCount(post.getComments().size())
+                .build();
+    }
+
+    public static GetPostResponse toPostDetail(Post post, boolean isLiked, List<GetComment> comments) {
+        return GetPostResponse.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .nickname(post.getUser().getNickname())
+                .likeCount(post.getLikeCount())
+                .viewCount(post.getViewCount())
+                .createdAt(formatTime(post.getCreatedAt()))
+                .isLiked(isLiked)
+                .comments(comments)
+                .commentCount(post.getComments().size())
+                .build();
+    }
+
+    public static GetComment toComment(Comment comment) {
+        return GetComment.builder()
+                .commentId(comment.getCommentId())
+                .content(comment.getContent())
+                .createdAt(formatTime(comment.getCreatedAt()))
                 .build();
     }
 

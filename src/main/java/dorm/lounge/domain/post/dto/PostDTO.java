@@ -44,6 +44,16 @@ public class PostDTO {
             private int viewCount;
             private String createdAt;
             private boolean isLiked;
+            private int commentCount;
+            private List<GetComment> comments;
+        }
+
+        @Getter
+        @Builder
+        public static class GetComment {
+            private Long commentId;
+            private String content;
+            private String createdAt;
         }
 
         @Getter
