@@ -107,4 +107,13 @@ public class AuthServiceImpl implements AuthService {
         return AuthConverter.toTokenRefreshResponse(newAccessToken, newRefreshToken);
 
     }
+
+    @Override
+    @Transactional
+    public void withdraw(String userId) {
+        User user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        userRepository.delete(user); // 하드 삭제 방식
+    }
 }
