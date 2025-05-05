@@ -9,4 +9,5 @@ import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.TokenRefreshResponse;
 public interface AuthService {
     AuthUserResponse kakaoLoginWithAccessToken(SocialLoginRequest socialLoginRequest);
     TokenRefreshResponse refreshAccessToken(TokenRefreshRequest tokenRefreshRequest);
+    void withdraw(String userId);
 }
