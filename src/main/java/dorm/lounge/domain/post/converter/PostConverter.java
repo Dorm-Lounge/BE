@@ -37,7 +37,7 @@ public class PostConverter {
                 .build();
     }
 
-    public static GetPostResponse toPostList(Post post, boolean isLiked) {
+    public static GetPostResponse toPostList(Post post, boolean isLiked, boolean isMine) {
         return GetPostResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -47,11 +47,12 @@ public class PostConverter {
                 .viewCount(post.getViewCount())
                 .createdAt(formatTime(post.getCreatedAt()))
                 .isLiked(isLiked)
+                .isMine(isMine)
                 .commentCount(post.getComments().size())
                 .build();
     }
 
-    public static GetPostResponse toPostDetail(Post post, boolean isLiked, List<GetComment> comments) {
+    public static GetPostResponse toPostDetail(Post post, boolean isLiked, List<GetComment> comments, boolean isMine) {
         return GetPostResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -61,16 +62,19 @@ public class PostConverter {
                 .viewCount(post.getViewCount())
                 .createdAt(formatTime(post.getCreatedAt()))
                 .isLiked(isLiked)
+                .isMine(isMine)
                 .comments(comments)
                 .commentCount(post.getComments().size())
                 .build();
     }
 
-    public static GetComment toComment(Comment comment) {
+    public static GetComment toComment(Comment comment, boolean isMine, int likeCount) {
         return GetComment.builder()
                 .commentId(comment.getCommentId())
                 .content(comment.getContent())
                 .createdAt(formatTime(comment.getCreatedAt()))
+                .isMine(isMine)
+                .likeCount(likeCount)
                 .build();
     }
 
