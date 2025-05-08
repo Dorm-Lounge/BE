@@ -66,11 +66,13 @@ public class PostConverter {
                 .build();
     }
 
-    public static GetComment toComment(Comment comment) {
+    public static GetComment toComment(Comment comment, boolean isLiked, int likeCount) {
         return GetComment.builder()
                 .commentId(comment.getCommentId())
                 .content(comment.getContent())
                 .createdAt(formatTime(comment.getCreatedAt()))
+                .isLiked(isLiked)
+                .likeCount(likeCount)
                 .build();
     }
 

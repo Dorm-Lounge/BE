@@ -54,6 +54,8 @@ public class PostDTO {
             private Long commentId;
             private String content;
             private String createdAt;
+            private int likeCount;
+            private boolean isLiked;
         }
 
         @Getter

@@ -9,6 +9,7 @@ import dorm.lounge.domain.post.dto.PostDTO.PostRequest.CreatePostRequest;
 import dorm.lounge.domain.post.dto.PostDTO.PostResponse.GetPostResponse;
 import dorm.lounge.domain.post.entity.Comment;
 import dorm.lounge.domain.post.entity.Post;
+import dorm.lounge.domain.post.repository.CommentLikeRepository;
 import dorm.lounge.domain.post.repository.CommentRepository;
 import dorm.lounge.domain.post.repository.PostLikeRepository;
 import dorm.lounge.domain.post.repository.PostRepository;
@@ -30,6 +31,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Override
     @Transactional
@@ -128,7 +130,11 @@ public class PostServiceImpl implements PostService {
         // 댓글 리스트 조회
         List<Comment> comments = commentRepository.findByPost(post);
         List<GetComment> commentDTOs = comments.stream()
-                .map(PostConverter::toComment)
+                .map(com -> PostConverter.toComment(
+                        com,
+                        commentLikeRepository.existsByUserAndComment(user, com),
+                        (int) commentLikeRepository.countByComment(com)
+                ))
                 .collect(Collectors.toList());
 
         return PostConverter.toPostDetail(post, isPostLikedByUser(user, post), commentDTOs);
