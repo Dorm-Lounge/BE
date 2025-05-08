@@ -6,6 +6,8 @@ import dorm.lounge.domain.post.repository.PostLikeRepository;
 import dorm.lounge.domain.post.repository.PostRepository;
 import dorm.lounge.domain.user.entity.User;
 import dorm.lounge.domain.user.repository.UserRepository;
+import dorm.lounge.global.exception.PostException;
+import dorm.lounge.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,7 @@ public class PostLikeServiceImpl implements PostLikeService {
         Post post = getPost(postId);
 
         if (postLikeRepository.existsByUserAndPost(user, post)) {
-            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+            throw new PostException(ErrorStatus.POST_ALREADY_LIKED);
         }
 
         postLikeRepository.save(PostLike.builder().user(user).post(post).build());
@@ -39,7 +41,7 @@ public class PostLikeServiceImpl implements PostLikeService {
         Post post = getPost(postId);
 
         PostLike postLike = postLikeRepository.findByUserAndPost(user, post)
-                .orElseThrow(() -> new RuntimeException("좋아요한 기록이 없습니다."));
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_LIKE_NOT_FOUND));
 
         postLikeRepository.delete(postLike);
         post.decreaseLike(); // 게시글 likeCount -1
@@ -47,11 +49,11 @@ public class PostLikeServiceImpl implements PostLikeService {
 
     private User getVerifiedUser(String userId) {
         return userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new PostException(ErrorStatus.AUTH_USER_NOT_FOUND));
     }
 
     private Post getPost(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
     }
 }

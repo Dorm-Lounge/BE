@@ -9,6 +9,8 @@ import dorm.lounge.domain.post.repository.CommentRepository;
 import dorm.lounge.domain.post.repository.PostRepository;
 import dorm.lounge.domain.user.entity.User;
 import dorm.lounge.domain.user.repository.UserRepository;
+import dorm.lounge.global.exception.CommentException;
+import dorm.lounge.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +27,9 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CreateCommentResponse createComment(String userId, Long postId, CreateCommentRequest request) {
         User user = userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new CommentException(ErrorStatus.AUTH_USER_NOT_FOUND));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+                .orElseThrow(() -> new CommentException(ErrorStatus.POST_NOT_FOUND));
 
         Comment comment = CommentConverter.toComment(user, post, request.getContent());
         commentRepository.save(comment);
@@ -39,12 +41,12 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteComment(String userId, Long commentId) {
         User user = userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new CommentException(ErrorStatus.AUTH_USER_NOT_FOUND));
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("댓글 없음"));
+                .orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+            throw new CommentException(ErrorStatus.COMMENT_ACCESS_DENIED);
         }
 
         commentRepository.delete(comment);

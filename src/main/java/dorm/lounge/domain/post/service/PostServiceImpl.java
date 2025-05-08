@@ -15,6 +15,8 @@ import dorm.lounge.domain.post.repository.PostLikeRepository;
 import dorm.lounge.domain.post.repository.PostRepository;
 import dorm.lounge.domain.user.entity.User;
 import dorm.lounge.domain.user.repository.UserRepository;
+import dorm.lounge.global.exception.PostException;
+import dorm.lounge.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,10 +52,10 @@ public class PostServiceImpl implements PostService {
         User user = getVerifiedUser(userId);
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
         if (!post.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("작성자만 수정할 수 있습니다.");
+            throw new PostException(ErrorStatus.POST_ACCESS_DENIED);
         }
 
         post.update(request.getTitle(), request.getContent());
@@ -65,10 +67,10 @@ public class PostServiceImpl implements PostService {
         User user = getVerifiedUser(userId);
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
         if (!post.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+            throw new PostException(ErrorStatus.POST_ACCESS_DENIED);
         }
 
         postRepository.delete(post);
@@ -77,10 +79,10 @@ public class PostServiceImpl implements PostService {
     // GPS 인증 여부 확인 공통 메서드
     private User getVerifiedUser(String userId) {
         User user = userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new PostException(ErrorStatus.AUTH_USER_NOT_FOUND));
 
         if (user.getGpsVerified() == null || !user.getGpsVerified()) {
-            throw new RuntimeException("GPS 인증이 필요합니다.");
+            throw new PostException(ErrorStatus.AUTH_GPS_UNVERIFIED); // GPS 인증 실패로 접근 제한
         }
 
         return user;

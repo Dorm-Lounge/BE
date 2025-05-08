@@ -8,9 +8,11 @@ import dorm.lounge.domain.auth.dto.AuthDTO.AuthResponse.AuthUserResponse;
 import dorm.lounge.domain.auth.dto.AuthProfile;
 import dorm.lounge.domain.user.entity.User;
 import dorm.lounge.domain.user.repository.UserRepository;
+import dorm.lounge.global.exception.AuthException;
 import dorm.lounge.global.security.JwtProvider;
 import dorm.lounge.global.security.JwtUtil;
 import dorm.lounge.global.security.OAuthUtil;
+import dorm.lounge.global.status.ErrorStatus;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -83,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. 토큰 유효성 검증
         if (!jwtUtil.validateToken(refreshToken)) {
-            throw new RuntimeException("유효하지 않은 RefreshToken입니다.");
+            throw new AuthException(ErrorStatus.AUTH_REFRESH_TOKEN_INVALID);
         }
 
         // 2. 사용자 정보 추출
@@ -91,11 +93,11 @@ public class AuthServiceImpl implements AuthService {
         Long userId = jwtUtil.extractUserId(claims);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AuthException(ErrorStatus.AUTH_USER_NOT_FOUND));
 
         // 3. 사용자 DB의 refreshToken과 비교
         if (!refreshToken.equals(user.getRefreshToken())) {
-            throw new RuntimeException("RefreshToken 불일치");
+            throw new AuthException(ErrorStatus.AUTH_REFRESH_TOKEN_MISMATCH);
         }
 
         // 4. 새로운 AccessToken 발급
@@ -112,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void withdraw(String userId) {
         User user = userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AuthException(ErrorStatus.AUTH_USER_NOT_FOUND));
 
         userRepository.delete(user); // 하드 삭제 방식
     }
