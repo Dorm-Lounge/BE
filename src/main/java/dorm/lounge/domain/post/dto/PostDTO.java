@@ -44,6 +44,7 @@ public class PostDTO {
             private int viewCount;
             private String createdAt;
             private boolean isLiked;
+            private boolean isMine;
             private int commentCount;
             private List<GetComment> comments;
         }
@@ -55,7 +56,7 @@ public class PostDTO {
             private String content;
             private String createdAt;
             private int likeCount;
-            private boolean isLiked;
+            private boolean isMine;
         }
 
         @Getter

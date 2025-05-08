@@ -105,11 +105,19 @@ public class PostServiceImpl implements PostService {
         List<Post> bestPosts = postRepository.findTop3ByCreatedAtAfterOrderByLikeCountDesc(sevenDaysAgo);
 
         List<GetPostResponse> postList = posts.stream()
-                .map(post -> PostConverter.toPostList(post, isPostLikedByUser(user, post)))
+                .map(post -> PostConverter.toPostList(
+                        post,
+                        isPostLikedByUser(user, post),
+                        post.getUser().getUserId().equals(user.getUserId())
+                ))
                 .collect(Collectors.toList());
 
         List<GetPostResponse> bestPostList = bestPosts.stream()
-                .map(post -> PostConverter.toPostList(post, isPostLikedByUser(user, post)))
+                .map(post -> PostConverter.toPostList(
+                        post,
+                        isPostLikedByUser(user, post),
+                        post.getUser().getUserId().equals(user.getUserId())
+                ))
                 .collect(Collectors.toList());
 
         return PostConverter.toPostListResponse(postList, bestPostList);
@@ -132,12 +140,12 @@ public class PostServiceImpl implements PostService {
         List<GetComment> commentDTOs = comments.stream()
                 .map(com -> PostConverter.toComment(
                         com,
-                        commentLikeRepository.existsByUserAndComment(user, com),
+                        com.getUser().getUserId().equals(user.getUserId()),
                         (int) commentLikeRepository.countByComment(com)
                 ))
                 .collect(Collectors.toList());
 
-        return PostConverter.toPostDetail(post, isPostLikedByUser(user, post), commentDTOs);
+        return PostConverter.toPostDetail(post, isPostLikedByUser(user, post), commentDTOs, post.getUser().getUserId().equals(user.getUserId()));
     }
 
     @Override
@@ -148,9 +156,12 @@ public class PostServiceImpl implements PostService {
 
         // 각 게시글에 대해 현재 사용자가 좋아요 눌렀는지 확인
         List<GetPostResponse> result = posts.stream()
-                .map(post -> PostConverter.toPostList(post, isPostLikedByUser(user, post)))
+                .map(post -> PostConverter.toPostList(
+                        post,
+                        isPostLikedByUser(user, post),
+                        post.getUser().getUserId().equals(user.getUserId())
+                ))
                 .collect(Collectors.toList());
-
         return PostConverter.toPostSearchResponse(result);
     }
 }
