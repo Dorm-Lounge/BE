@@ -11,7 +11,7 @@ import dorm.lounge.domain.user.entity.User;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 
 public class PostConverter {
     public static Post toPost(User user, String title, String content) {
@@ -85,7 +85,8 @@ public class PostConverter {
         if (duration.toMinutes() < 60) return duration.toMinutes() + "분 전";
         if (duration.toHours() < 24) return duration.toHours() + "시간 전";
         if (duration.toDays() < 7) return duration.toDays() + "일 전";
-        return createdAt.toLocalDate().toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return createdAt.format(formatter);
     }
 
     public static GetPostListResponse toPostListResponse(List<GetPostResponse> posts, List<GetPostResponse> bestPosts) {

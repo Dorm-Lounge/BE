@@ -19,8 +19,8 @@ public class ResponseUtil {
 
     public void writeErrorResponse(HttpServletResponse response, ErrorStatus errorStatus, HttpStatus httpStatus) throws IOException {
         ApiResponse<Object> errorResponse = ApiResponse.onFailure(
-                errorStatus.getCode(),
-                errorStatus.getMessage(),
+                errorStatus.getReason().getCode(),
+                errorStatus.getReason().getMessage(),
                 "");
         response.setStatus(httpStatus.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
