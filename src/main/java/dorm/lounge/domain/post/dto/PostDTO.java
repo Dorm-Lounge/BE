@@ -53,6 +53,7 @@ public class PostDTO {
         @Builder
         public static class GetComment {
             private Long commentId;
+            private String nickName;
             private String content;
             private String createdAt;
             private int likeCount;

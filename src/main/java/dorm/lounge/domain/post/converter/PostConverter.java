@@ -71,6 +71,7 @@ public class PostConverter {
     public static GetComment toComment(Comment comment, boolean isMine, int likeCount) {
         return GetComment.builder()
                 .commentId(comment.getCommentId())
+                .nickName(comment.getUser().getNickname())
                 .content(comment.getContent())
                 .createdAt(formatTime(comment.getCreatedAt()))
                 .isMine(isMine)
